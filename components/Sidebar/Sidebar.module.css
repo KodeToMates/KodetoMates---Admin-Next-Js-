@@ -1,0 +1,58 @@
+.sidebar {
+  width: 280px;
+  background: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  padding: 0 10px;
+}
+
+.brand img {
+  height: 32px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  transition: background 0.3s, color 0.3s;
+  cursor: pointer;
+}
+
+.navItem:hover, .navItemActive {
+  background: rgba(211, 90, 42, 0.1);
+  color: var(--primary);
+}
+
+.navItem i {
+  width: 20px;
+  text-align: center;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.logout {
+  color: #ef4444 !important;
+}
+
+.logout:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+}
