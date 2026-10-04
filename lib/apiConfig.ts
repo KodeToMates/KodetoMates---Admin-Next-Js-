@@ -2,8 +2,8 @@
 // You can still override this using the NEXT_PUBLIC_API_BASE_URL environment variable on Vercel.
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 
   (process.env.NODE_ENV === 'production' 
-    ? "https://kodetomates-backend.onrender.com/api" 
-    : "http://localhost:8081/api");
+    ? "https://kodetomates-backend.onrender.com/api/v1" 
+    : "http://localhost:8081/api/v1");
 
 export const API_ENDPOINTS = {
   auth: {
