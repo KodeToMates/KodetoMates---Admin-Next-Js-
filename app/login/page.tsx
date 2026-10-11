@@ -10,6 +10,8 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("admin@example.com");
   const [password, setPassword] = useState("password");
+  const [mfaCode, setMfaCode] = useState("");
+  const [showMfa, setShowMfa] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,14 +21,23 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const res = await apiClient.post(API_ENDPOINTS.auth.login, { email, password });
-
-      if (!res.ok) {
-        throw new Error("Invalid email or password");
+      const payload: any = { email, password };
+      if (showMfa) {
+        payload.mfaCode = parseInt(mfaCode, 10);
       }
 
-      const data = await res.json();
+      const res = await apiClient.post(API_ENDPOINTS.auth.login, payload);
       
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        if (data?.mfaRequired) {
+          setShowMfa(true);
+          throw new Error("MFA Code is required for this account.");
+        }
+        throw new Error(data?.error || data?.message || "Invalid email or password");
+      }
+
       // Save the JWT token (using localStorage for simplicity in Phase 4)
       localStorage.setItem("token", data.token);
       localStorage.setItem("authorities", JSON.stringify(data.authorities));
@@ -61,28 +72,49 @@ export default function LoginPage() {
             {error}
           </div>
         )}
-        <div className="formGroup">
-          <label>Email Address</label>
-          <input 
-            type="email" 
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isLoading}
-            required 
-          />
-        </div>
-        <div className="formGroup">
-          <label>Password</label>
-          <input 
-            type="password" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={isLoading}
-            required 
-          />
-        </div>
+
+        {!showMfa ? (
+          <>
+            <div className="formGroup">
+              <label>Email Address</label>
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                required 
+              />
+            </div>
+            <div className="formGroup">
+              <label>Password</label>
+              <input 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                required 
+              />
+            </div>
+          </>
+        ) : (
+          <div className="formGroup">
+            <label>Authenticator Code (6-digit)</label>
+            <input 
+              type="text" 
+              maxLength={6}
+              value={mfaCode}
+              onChange={(e) => setMfaCode(e.target.value)}
+              disabled={isLoading}
+              required 
+              autoFocus
+              placeholder="123456"
+              style={{ letterSpacing: "5px", textAlign: "center", fontSize: "1.2rem" }}
+            />
+          </div>
+        )}
+
         <button type="submit" className="btn" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign In"}
+          {isLoading ? "Signing in..." : (showMfa ? "Verify Code" : "Sign In")}
         </button>
       </form>
     </div>
