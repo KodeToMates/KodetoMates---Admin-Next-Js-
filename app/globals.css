@@ -328,6 +328,14 @@ select option {
   box-shadow: 0 0 0 3px rgba(211, 90, 42, 0.2);
 }
 
+.formGroup input:-webkit-autofill,
+.formGroup input:-webkit-autofill:hover, 
+.formGroup input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text-main);
+  -webkit-box-shadow: 0 0 0px 1000px rgba(35, 35, 35, 0.95) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
