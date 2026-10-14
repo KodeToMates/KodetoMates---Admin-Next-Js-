@@ -8,6 +8,10 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ||
 export const API_ENDPOINTS = {
   auth: {
     login: `${API_BASE_URL}/auth/login`,
+    me: `${API_BASE_URL}/auth/me`,
+    changePassword: `${API_BASE_URL}/auth/change-password`,
+    forgotPasswordRequest: `${API_BASE_URL}/auth/forgot-password/request`,
+    forgotPasswordReset: `${API_BASE_URL}/auth/forgot-password/reset`,
     mfaSetup: `${API_BASE_URL}/auth/mfa/setup`,
     mfaVerify: `${API_BASE_URL}/auth/mfa/verify`,
   },

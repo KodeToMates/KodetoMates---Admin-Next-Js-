@@ -5,40 +5,36 @@
   margin-bottom: 40px;
 }
 
+.titleWrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menuToggleBtn {
+  background: rgba(90, 90, 90, 0.15);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1.05rem;
+}
+
+.menuToggleBtn:hover {
+  background: rgba(211, 90, 42, 0.2);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
 .title {
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-}
-
-.userProfile {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.userInfo {
-  text-align: right;
-}
-
-.userName {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.userRole {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
 }

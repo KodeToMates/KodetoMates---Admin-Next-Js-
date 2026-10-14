@@ -16,6 +16,8 @@ interface Application {
   updatedAt: string;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export default function ApplicationsPage() {
   const [apps, setApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,9 @@ export default function ApplicationsPage() {
   // Edit State
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editEmail, setEditEmail] = useState("");
+
+  // Progressive lazy loading state
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
   useEffect(() => {
     fetchApps();
@@ -59,15 +64,18 @@ export default function ApplicationsPage() {
     setEditEmail(app.toEmail || "");
   };
 
+  const visibleApps = apps.slice(0, visibleCount);
+  const hasMore = visibleCount < apps.length;
+
   return (
     <div>
       <div className="gridCards">
         <div className="card">
           <div className="cardHeader">
-            <span>Total Apps</span>
+            <span>Total Tenants</span>
             <i className="fa-solid fa-cube"></i>
           </div>
-          <div className="cardValue">{apps.length}</div>
+          <div className="cardValue">{loading ? "..." : apps.length}</div>
           <div style={{ color: "#34d399", fontSize: "0.9rem" }}>
             <i className="fa-solid fa-arrow-trend-up"></i> Active tracking
           </div>
@@ -75,21 +83,41 @@ export default function ApplicationsPage() {
       </div>
 
       <div className="tableContainer">
-        {loading ? (
-          <div style={{ padding: "20px", textAlign: "center" }}>Loading applications...</div>
-        ) : (
-          <table className="table">
-            <thead>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Tenant Name</th>
+              <th>Domain</th>
+              <th>To Email</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              // Shimmer skeleton rows for lazy loading
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx}>
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <div className="skeleton" style={{ width: "20px", height: "20px", borderRadius: "4px" }}></div>
+                      <div className="skeleton" style={{ width: "120px", height: "16px" }}></div>
+                    </div>
+                  </td>
+                  <td><div className="skeleton" style={{ width: "140px", height: "14px" }}></div></td>
+                  <td><div className="skeleton" style={{ width: "150px", height: "14px" }}></div></td>
+                  <td><div className="skeleton" style={{ width: "65px", height: "20px", borderRadius: "4px" }}></div></td>
+                  <td><div className="skeleton" style={{ width: "75px", height: "28px", borderRadius: "6px" }}></div></td>
+                </tr>
+              ))
+            ) : apps.length === 0 ? (
               <tr>
-                <th>App Name</th>
-                <th>Domain</th>
-                <th>To Email</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <td colSpan={5} style={{ textAlign: "center", padding: "30px", color: "var(--text-muted)" }}>
+                  No core tenants found in database.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {apps.map(app => (
+            ) : (
+              visibleApps.map((app) => (
                 <tr key={app.id}>
                   <td>
                     <i className="fa-solid fa-window-restore" style={{ color: "var(--primary)", marginRight: "10px" }}></i> 
@@ -126,14 +154,29 @@ export default function ApplicationsPage() {
                     )}
                   </td>
                 </tr>
-              ))}
-              {apps.length === 0 && (
-                <tr>
-                  <td colSpan={5} style={{ textAlign: "center", padding: "20px" }}>No applications found in database.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+              ))
+            )}
+          </tbody>
+        </table>
+
+        {/* Progressive lazy loading load-more footer */}
+        {!loading && apps.length > ITEMS_PER_PAGE && (
+          <div className="lazyLoadFooter">
+            <span>
+              Showing {Math.min(visibleCount, apps.length)} of {apps.length} applications
+            </span>
+            {hasMore ? (
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={() => setVisibleCount((prev) => prev + ITEMS_PER_PAGE)}
+              >
+                <i className="fa-solid fa-angles-down" style={{ marginRight: "6px" }}></i>
+                Load More Applications
+              </button>
+            ) : (
+              <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>All applications loaded</span>
+            )}
+          </div>
         )}
       </div>
     </div>

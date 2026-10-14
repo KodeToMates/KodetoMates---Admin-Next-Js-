@@ -1,59 +1,307 @@
 .container {
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
+  padding: 0 0 40px 0;
+  width: 100%;
 }
 
-.container h2 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
+.headerSection {
+  margin-bottom: 25px;
+}
+
+.headerSection h2 {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+  color: var(--text-main);
 }
 
 .description {
   color: var(--text-muted);
-  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+.cardsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 }
 
 .card {
-  background-color: var(--bg-surface);
+  background: var(--card-bg);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  padding: 30px;
+  backdrop-filter: blur(10px);
 }
 
-.card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.card p {
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cardTitle i {
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.cardSubtitle {
   color: var(--text-muted);
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* Profile summary header */
+.profileSummary {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.largeAvatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px -6px rgba(211, 90, 42, 0.5);
+  flex-shrink: 0;
+}
+
+.profileMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profileName {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.profileEmail {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.badgeRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  align-items: center;
+}
+
+/* Form layout */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.inputField {
+  padding: 12px 14px;
+  background: rgba(90, 90, 90, 0.1);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+
+.inputField:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(211, 90, 42, 0.2);
+}
+
+.inputField:disabled, .inputFieldReadOnly {
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.passwordInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordToggleBtn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.passwordToggleBtn:hover {
+  color: var(--text-main);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 15px;
 }
 
 .btnPrimary {
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
-  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.btnPrimary:hover {
-  background-color: var(--primary-hover);
+.btnPrimary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px -6px rgba(211, 90, 42, 0.4);
 }
 
 .btnPrimary:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
+.btnSecondary {
+  background: var(--surface-hover);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--text-muted);
+}
+
+.btnSecondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.linkBtn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.linkBtn:hover {
+  color: var(--primary-hover);
+}
+
+.forgotPasswordBanner {
+  background: rgba(211, 90, 42, 0.08);
+  border: 1px dashed var(--primary);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.forgotPasswordInfo {
+  font-size: 0.9rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.forgotPasswordInfo i {
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
+/* Alerts */
+.errorAlert {
+  background-color: rgba(255, 68, 68, 0.12);
+  color: #ff5555;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.successAlert {
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* MFA Specific */
 .mfaSetupContainer {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
@@ -61,60 +309,46 @@
 }
 
 .steps {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .steps p {
-  margin-bottom: 1rem;
-  color: var(--text-primary);
+  margin-bottom: 0.8rem;
+  color: var(--text-main);
+  font-size: 0.95rem;
 }
 
 .qrCode {
   display: block;
-  margin: 1.5rem 0;
+  margin: 1rem 0;
   border: 4px solid white;
   border-radius: 8px;
   background-color: white;
 }
 
 .secret {
-  background-color: var(--bg-surface-hover);
-  padding: 0.25rem 0.5rem;
+  background-color: rgba(90, 90, 90, 0.2);
+  padding: 4px 8px;
   border-radius: 4px;
   font-family: monospace;
-  font-size: 1.1rem;
+  font-size: 1rem;
   letter-spacing: 2px;
+  color: var(--primary);
 }
 
 .codeInput {
-  padding: 0.75rem;
+  padding: 10px 14px;
   border: 1px solid var(--border-color);
-  background-color: var(--bg-body);
-  color: var(--text-primary);
-  border-radius: 6px;
+  background: rgba(90, 90, 90, 0.1);
+  color: var(--text-main);
+  border-radius: 8px;
   font-size: 1.2rem;
   letter-spacing: 5px;
   text-align: center;
-  width: 150px;
+  width: 160px;
+  outline: none;
 }
 
 .codeInput:focus {
-  outline: none;
-  border-color: var(--primary-color);
-}
-
-.errorAlert {
-  background-color: rgba(255, 68, 68, 0.1);
-  color: #ff4444;
-  padding: 1rem;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
-}
-
-.successAlert {
-  background-color: rgba(0, 200, 81, 0.1);
-  color: #00c851;
-  padding: 1rem;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
+  border-color: var(--primary);
 }

@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { API_ENDPOINTS } from "@/lib/apiConfig";
 import { apiClient } from "@/lib/apiClient";
+
+// Lazy-load the heavy Add User modal component only when needed
+const AddUserModal = dynamic(() => import("./AddUserModal"), {
+  ssr: false,
+  loading: () => null,
+});
 
 interface User {
   id: number;
@@ -15,6 +22,8 @@ interface User {
   accessProfiles: string[];
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export default function IamPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
@@ -25,12 +34,10 @@ export default function IamPage() {
   const [editStatus, setEditStatus] = useState("");
 
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
-  const [newEmail, setNewEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [newFirstName, setNewFirstName] = useState("");
-  const [newLastName, setNewLastName] = useState("");
-  const [newAccessProfile, setNewAccessProfile] = useState("");
   const [availableProfiles, setAvailableProfiles] = useState<string[]>([]);
+  
+  // Progressive lazy loading state for large lists
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
   const fetchUsers = async () => {
     const token = localStorage.getItem("token");
@@ -51,11 +58,24 @@ export default function IamPage() {
       setUsers(usersData);
       
       if (resProfiles.ok) {
-        const profilesData = await resProfiles.json();
-        setAvailableProfiles(profilesData);
-        if (profilesData.length > 0) {
-          setNewAccessProfile(profilesData[0]);
+        const profilesData: string[] = await resProfiles.json();
+        // Deduplicate roles (e.g. merge "Super Admin" and "SUPERADMIN")
+        const seen = new Set<string>();
+        const cleaned: string[] = [];
+        const hasUpperSuperAdmin = profilesData.includes("SUPERADMIN");
+
+        for (const p of profilesData) {
+          const key = p.toLowerCase().replace(/[\s_-]/g, "");
+          // Favor SUPERADMIN if both are present
+          if (key === "superadmin" && p !== "SUPERADMIN" && hasUpperSuperAdmin) {
+            continue;
+          }
+          if (!seen.has(key)) {
+            seen.add(key);
+            cleaned.push(p);
+          }
         }
+        setAvailableProfiles(cleaned);
       }
     } catch (err: any) {
       setError(err.message);
@@ -82,31 +102,8 @@ export default function IamPage() {
     }
   };
 
-  const handleAddUser = async () => {
-    try {
-      const res = await apiClient.post(API_ENDPOINTS.iam.users, {
-        email: newEmail,
-        password: newPassword,
-        firstName: newFirstName,
-        lastName: newLastName,
-        accessProfile: newAccessProfile
-      });
-      if (res.ok) {
-        setIsAddUserModalOpen(false);
-        setNewEmail("");
-        setNewPassword("");
-        setNewFirstName("");
-        setNewLastName("");
-        // Reset to first available if present
-        setNewAccessProfile(availableProfiles.length > 0 ? availableProfiles[0] : "");
-        fetchUsers();
-      } else {
-        alert("Failed to create user");
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const visibleUsers = users.slice(0, visibleCount);
+  const hasMore = visibleCount < users.length;
 
   return (
     <div>
@@ -120,10 +117,10 @@ export default function IamPage() {
         </div>
         <div className="card">
           <div className="cardHeader">
-            <span>Access Profiles</span>
+            <span>Roles</span>
             <i className="fa-solid fa-shield-halved"></i>
           </div>
-          <div className="cardValue">6</div>
+          <div className="cardValue">{availableProfiles.length || 3}</div>
         </div>
       </div>
 
@@ -140,7 +137,7 @@ export default function IamPage() {
           <thead>
             <tr>
               <th>User</th>
-              <th>Access Profiles</th>
+              <th>Roles</th>
               <th>Status</th>
               <th>Last Login</th>
               <th>Actions</th>
@@ -148,17 +145,31 @@ export default function IamPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} style={{ textAlign: "center" }}>Loading users...</td></tr>
+              // Shimmer Skeleton Rows for smooth lazy loading feedback
+              Array.from({ length: 5 }).map((_, idx) => (
+                <tr key={idx}>
+                  <td>
+                    <div className="skeleton" style={{ width: "140px", height: "16px", marginBottom: "6px" }}></div>
+                    <div className="skeleton" style={{ width: "100px", height: "12px" }}></div>
+                  </td>
+                  <td><div className="skeleton" style={{ width: "90px", height: "16px" }}></div></td>
+                  <td><div className="skeleton" style={{ width: "65px", height: "20px", borderRadius: "4px" }}></div></td>
+                  <td><div className="skeleton" style={{ width: "110px", height: "14px" }}></div></td>
+                  <td><div className="skeleton" style={{ width: "55px", height: "28px", borderRadius: "6px" }}></div></td>
+                </tr>
+              ))
             ) : users.length === 0 ? (
-              <tr><td colSpan={5} style={{ textAlign: "center" }}>No users found.</td></tr>
+              <tr><td colSpan={5} style={{ textAlign: "center", padding: "30px", color: "var(--text-muted)" }}>No users found.</td></tr>
             ) : (
-              users.map((user) => (
+              visibleUsers.map((user) => (
                 <tr key={user.id}>
                   <td>
                     <div style={{ fontWeight: 600 }}>{user.firstName} {user.lastName}</div>
                     <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{user.email}</div>
                   </td>
-                  <td>{user.accessProfiles.join(", ") || "None"}</td>
+                  <td>
+                    {user.accessProfiles.map((p) => (p === "SUPERADMIN" ? "Super Admin" : p)).join(", ") || "None"}
+                  </td>
                   <td>
                     {editingId === user.id ? (
                       <select 
@@ -194,71 +205,36 @@ export default function IamPage() {
             )}
           </tbody>
         </table>
+
+        {/* Progressive lazy loading load-more footer */}
+        {!loading && users.length > ITEMS_PER_PAGE && (
+          <div className="lazyLoadFooter">
+            <span>
+              Showing {Math.min(visibleCount, users.length)} of {users.length} users
+            </span>
+            {hasMore ? (
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={() => setVisibleCount((prev) => prev + ITEMS_PER_PAGE)}
+              >
+                <i className="fa-solid fa-angles-down" style={{ marginRight: "6px" }}></i>
+                Load More Users
+              </button>
+            ) : (
+              <span style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>All users loaded</span>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* Dynamic Lazy-loaded Modal */}
       {isAddUserModalOpen && (
-        <div className="modalOverlay">
-          <div className="modalContent" style={{ width: "400px" }}>
-            <div className="modalHeader">
-              <h3 style={{ margin: 0, color: "var(--text-main)" }}>Add New User</h3>
-            </div>
-            <div className="modalBody" style={{ display: "flex", flexDirection: "column", gap: "15px", padding: "20px" }}>
-              <div>
-                <label style={{ display: "block", marginBottom: "5px", color: "var(--text-muted)" }}>Email</label>
-                <input 
-                  type="email" 
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  style={{ width: "100%", padding: "8px", borderRadius: "5px", border: "1px solid var(--border-color)", background: "var(--bg-color)", color: "var(--text-main)" }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", marginBottom: "5px", color: "var(--text-muted)" }}>Password</label>
-                <input 
-                  type="password" 
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  style={{ width: "100%", padding: "8px", borderRadius: "5px", border: "1px solid var(--border-color)", background: "var(--bg-color)", color: "var(--text-main)" }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", marginBottom: "5px", color: "var(--text-muted)" }}>First Name</label>
-                <input 
-                  type="text" 
-                  value={newFirstName}
-                  onChange={(e) => setNewFirstName(e.target.value)}
-                  style={{ width: "100%", padding: "8px", borderRadius: "5px", border: "1px solid var(--border-color)", background: "var(--bg-color)", color: "var(--text-main)" }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", marginBottom: "5px", color: "var(--text-muted)" }}>Last Name</label>
-                <input 
-                  type="text" 
-                  value={newLastName}
-                  onChange={(e) => setNewLastName(e.target.value)}
-                  style={{ width: "100%", padding: "8px", borderRadius: "5px", border: "1px solid var(--border-color)", background: "var(--bg-color)", color: "var(--text-main)" }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", marginBottom: "5px", color: "var(--text-muted)" }}>Access Profile</label>
-                <select 
-                  value={newAccessProfile}
-                  onChange={(e) => setNewAccessProfile(e.target.value)}
-                  style={{ width: "100%", padding: "8px", borderRadius: "5px", border: "1px solid var(--border-color)", background: "var(--bg-color)", color: "var(--text-main)" }}
-                >
-                  <option value="">-- None --</option>
-                  {availableProfiles.map(profile => (
-                    <option key={profile} value={profile}>{profile}</option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                <button className="btn" onClick={handleAddUser}>Create User</button>
-                <button className="btn btn-outline" onClick={() => setIsAddUserModalOpen(false)}>Cancel</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AddUserModal
+          isOpen={isAddUserModalOpen}
+          onClose={() => setIsAddUserModalOpen(false)}
+          onSuccess={fetchUsers}
+          availableProfiles={availableProfiles}
+        />
       )}
     </div>
   );

@@ -66,10 +66,14 @@ export default function LoginPage() {
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw" }}>
       <div className="loginScreen">
       <div className="logoContainer">
-        <img 
+        <Image 
           src="/KM - Logo.png" 
           alt="Kodetomates Logo" 
           className="logoImage"
+          width={140}
+          height={64}
+          loading="lazy"
+          style={{ width: "auto" }}
         />
         <h1>Admin Portal</h1>
         <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginTop: "10px" }}>
