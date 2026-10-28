@@ -10,6 +10,7 @@ interface Lead {
   email: string;
   phone: string;
   company: string;
+  subject?: string;
   leadSource: string;
   message: string;
   status: string;
@@ -135,6 +136,13 @@ export default function CrmPage() {
                     <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>{lead.phone || "No phone"}</span>
                   </td>
                   <td>
+                    {lead.subject && (
+                      <div style={{ marginBottom: "4px" }}>
+                        <span style={{ fontSize: "0.75rem", padding: "2px 6px", borderRadius: "4px", background: "rgba(228,82,27,0.15)", color: "#E4521B", fontWeight: 600 }}>
+                          {lead.subject}
+                        </span>
+                      </div>
+                    )}
                     {lead.company || "-"}<br/>
                     <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Src: {lead.leadSource || "Direct"}</span>
                   </td>

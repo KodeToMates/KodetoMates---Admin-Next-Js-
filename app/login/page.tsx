@@ -67,13 +67,13 @@ export default function LoginPage() {
       <div className="loginScreen">
       <div className="logoContainer">
         <Image 
-          src="/KM - Logo.png" 
-          alt="Kodetomates Logo" 
+          src="/Image_v1/Primary-Logo.png" 
+          alt="KodeToMates Logo" 
           className="logoImage"
-          width={140}
+          width={64}
           height={64}
-          loading="lazy"
-          style={{ width: "auto" }}
+          priority
+          style={{ width: "auto", height: "64px", objectFit: "contain" }}
         />
         <h1>Admin Portal</h1>
         <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginTop: "10px" }}>

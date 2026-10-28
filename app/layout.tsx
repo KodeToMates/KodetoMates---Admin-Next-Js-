@@ -19,6 +19,18 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Identity Admin Portal",
   description: "Manage applications, CRM leads, and Identity Entitlements.",
+  icons: {
+    icon: [
+      { url: '/Image_v1/favicon_io/favicon.ico?v=2' },
+      { url: '/Image_v1/favicon_io/favicon-32x32.png?v=2', sizes: '32x32', type: 'image/png' },
+      { url: '/Image_v1/favicon_io/favicon-16x16.png?v=2', sizes: '16x16', type: 'image/png' },
+    ],
+    shortcut: '/Image_v1/favicon_io/favicon.ico?v=2',
+    apple: [
+      { url: '/Image_v1/favicon_io/apple-touch-icon.png?v=2', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/Image_v1/favicon_io/site.webmanifest',
 };
 
 export default function RootLayout({
@@ -29,6 +41,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={poppins.variable} suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/Image_v1/favicon_io/favicon.ico?v=2" sizes="any" />
+        <link rel="icon" href="/Image_v1/favicon_io/favicon-32x32.png?v=2" type="image/png" sizes="32x32" />
+        <link rel="icon" href="/Image_v1/favicon_io/favicon-16x16.png?v=2" type="image/png" sizes="16x16" />
+        <link rel="apple-touch-icon" href="/Image_v1/favicon_io/apple-touch-icon.png?v=2" />
+        <link rel="manifest" href="/Image_v1/favicon_io/site.webmanifest" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

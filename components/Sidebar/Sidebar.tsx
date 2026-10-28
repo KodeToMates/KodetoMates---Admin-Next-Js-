@@ -24,8 +24,13 @@ export default function Sidebar() {
   const { theme, toggleTheme } = useTheme();
 
   const [userName, setUserName] = useState("Admin User");
-  const [userRole, setUserRole] = useState("Superadmin");
+  const [userRole, setUserRole] = useState("");
   const [avatarChar, setAvatarChar] = useState("A");
+
+  const isSuperAdmin = (role: string) => {
+    const norm = (role || "").toLowerCase().replace(/[\s_-]/g, "");
+    return norm === "superadmin";
+  };
 
   useEffect(() => {
     const syncProfileFromStorage = () => {
@@ -85,12 +90,12 @@ export default function Sidebar() {
       <div className={styles.brand}>
         <div className={styles.brandLogoWrap}>
           <Image
-            src="/KM - Logo.png"
-            alt="Kodetomates Logo"
+            src="/Image_v1/Primary-Logo.png"
+            alt="KodeToMates Logo"
             width={32}
             height={32}
-            loading="lazy"
-            style={{ height: "32px", width: "auto" }}
+            priority
+            style={{ height: "32px", width: "auto", objectFit: "contain" }}
           />
           {!isCollapsed && <span className={styles.brandText}>Admin Portal</span>}
         </div>
@@ -106,7 +111,12 @@ export default function Sidebar() {
       </div>
 
       <nav style={{ display: "flex", flexDirection: "column" }}>
-        {NAV_ITEMS.map((item) => {
+        {NAV_ITEMS.filter((item) => {
+          if (item.id === "iam") {
+            return isSuperAdmin(userRole);
+          }
+          return true;
+        }).map((item) => {
           const isActive = pathname.startsWith(item.path);
           return (
             <Link

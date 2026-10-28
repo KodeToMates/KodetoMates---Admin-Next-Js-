@@ -46,6 +46,12 @@ export default function IamPage() {
       return;
     }
 
+    const storedRole = (localStorage.getItem("userRole") || "").toLowerCase().replace(/[\s_-]/g, "");
+    if (storedRole && storedRole !== "superadmin") {
+      router.push("/admin/applications");
+      return;
+    }
+
     try {
       const [resUsers, resProfiles] = await Promise.all([
         apiClient.get(API_ENDPOINTS.iam.users),
