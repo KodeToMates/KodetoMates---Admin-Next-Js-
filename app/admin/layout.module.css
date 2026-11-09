@@ -3,6 +3,62 @@
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  position: relative;
+}
+
+.ambientGlowContainer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.glowOrb1 {
+  position: absolute;
+  top: -15%;
+  right: 15%;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(228, 82, 27, 0.18) 0%, rgba(228, 82, 27, 0.04) 50%, transparent 70%);
+  filter: blur(80px);
+  animation: floatOrb 22s ease-in-out infinite alternate;
+}
+
+.glowOrb2 {
+  position: absolute;
+  bottom: -15%;
+  left: 18%;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(99, 102, 241, 0.03) 50%, transparent 70%);
+  filter: blur(100px);
+  animation: floatOrb2 26s ease-in-out infinite alternate;
+}
+
+.glowOrb3 {
+  position: absolute;
+  top: 40%;
+  right: 35%;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.08) 0%, transparent 70%);
+  filter: blur(90px);
+}
+
+@keyframes floatOrb {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 40px) scale(1.08); }
+  100% { transform: translate(20px, -20px) scale(0.95); }
+}
+
+@keyframes floatOrb2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -30px) scale(1.05); }
+  100% { transform: translate(-20px, 20px) scale(0.92); }
 }
 
 .mainContent {
@@ -12,4 +68,6 @@
   padding: 30px 40px;
   overflow-y: auto;
   overflow-x: hidden;
+  position: relative;
+  z-index: 1;
 }

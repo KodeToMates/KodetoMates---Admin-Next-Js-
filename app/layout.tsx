@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/Theme/ThemeContext";
+import { ConfirmProvider } from "@/components/ConfirmModal";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -41,6 +42,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={poppins.variable} suppressHydrationWarning>
       <head>
+        {/* Pre-hydration cleanup script for browser extension attribute injections (e.g. Bitdefender bis_skin_checked) */}
+        <script
+          id="extension-hydration-fix"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var a=['bis_skin_checked','bis_register','data-gr-ext-installed','data-new-gr-c-s-check-loaded','cz-shortcut-listen','fdprocessedid'];function c(){for(var i=0;i<a.length;i++){var e=document.querySelectorAll('['+a[i]+']');for(var j=0;j<e.length;j++){e[j].removeAttribute(a[i]);}}}if(typeof document!=='undefined'){c();try{var o=new MutationObserver(function(m){for(var i=0;i<m.length;i++){if(m[i].type==='attributes'&&a.indexOf(m[i].attributeName)!==-1){m[i].target.removeAttribute(m[i].attributeName);}}});o.observe(document.documentElement,{attributes:true,subtree:true,attributeFilter:a});}catch(e){}}})();`,
+          }}
+        />
         <link rel="icon" href="/Image_v1/favicon_io/favicon.ico?v=2" sizes="any" />
         <link rel="icon" href="/Image_v1/favicon_io/favicon-32x32.png?v=2" type="image/png" sizes="32x32" />
         <link rel="icon" href="/Image_v1/favicon_io/favicon-16x16.png?v=2" type="image/png" sizes="16x16" />
@@ -72,7 +80,9 @@ export default function RootLayout({
       </head>
       <body className={`${poppins.className} ${poppins.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
         <ThemeProvider>
-          {children}
+          <ConfirmProvider>
+            {children}
+          </ConfirmProvider>
         </ThemeProvider>
       </body>
     </html>

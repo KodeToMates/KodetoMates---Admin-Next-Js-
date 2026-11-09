@@ -12,12 +12,19 @@ export default function AdminLayout({
   return (
     <SidebarProvider>
       <div className={styles.dashboardScreen}>
-        <Sidebar />
-        <div className={styles.mainContent}>
-          <TopHeader />
-          {/* Child pages (Applications, CRM, Templates, IAM, Profile) will render here */}
-          {children}
+        {/* Ambient Glassmorphic Aurora Glow Backdrops */}
+        <div className={styles.ambientGlowContainer} aria-hidden="true">
+          <div className={styles.glowOrb1} />
+          <div className={styles.glowOrb2} />
+          <div className={styles.glowOrb3} />
         </div>
+
+        <Sidebar />
+        <main className={styles.mainContent}>
+          <TopHeader />
+          {/* Child pages (Applications, CRM, Templates, IAM, Profile) render here */}
+          {children}
+        </main>
       </div>
     </SidebarProvider>
   );

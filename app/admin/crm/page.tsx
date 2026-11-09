@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "@/lib/apiConfig";
 import { apiClient } from "@/lib/apiClient";
+import { useConfirm } from "@/components/ConfirmModal";
 
 interface Lead {
   id: number;
@@ -21,12 +22,14 @@ interface Lead {
 const ITEMS_PER_PAGE = 10;
 
 export default function CrmPage() {
+  const { confirm, alert: showAlert } = useConfirm();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editStatus, setEditStatus] = useState("");
   const [editNotes, setEditNotes] = useState("");
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   // Progressive lazy loading state
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
@@ -58,6 +61,45 @@ export default function CrmPage() {
       }
     } catch (err) {
       console.error("Failed to update lead:", err);
+    }
+  };
+
+  const handleDelete = async (id: number, name: string) => {
+    const isConfirmed = await confirm({
+      title: "Delete CRM Lead",
+      message: "Are you sure you want to permanently delete this lead? This action will permanently remove it from the database.",
+      itemName: name,
+      confirmText: "Yes, Delete Lead",
+      cancelText: "Cancel",
+      variant: "danger",
+    });
+    if (!isConfirmed) return;
+
+    setDeletingId(id);
+    try {
+      const res = await apiClient.delete(API_ENDPOINTS.contact.byId(id));
+      if (res.ok) {
+        setLeads((prev) => prev.filter((lead) => lead.id !== id));
+        if (editingId === id) {
+          setEditingId(null);
+        }
+      } else {
+        const data = await res.json().catch(() => null);
+        await showAlert({
+          title: "Delete Failed",
+          message: data?.message || "Failed to delete lead from server.",
+          variant: "danger",
+        });
+      }
+    } catch (err) {
+      console.error("Failed to delete lead:", err);
+      await showAlert({
+        title: "Error",
+        message: "An unexpected error occurred while deleting the lead.",
+        variant: "danger",
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -156,7 +198,7 @@ export default function CrmPage() {
                       <select 
                         value={editStatus} 
                         onChange={(e) => setEditStatus(e.target.value)}
-                        style={{ padding: "5px", borderRadius: "5px", border: "1px solid var(--border-color)", background: "var(--card-bg)", color: "var(--text-main)" }}
+                        style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--border-color)", background: "var(--input-bg)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "var(--text-main)", outline: "none" }}
                       >
                         <option value="NEW">New</option>
                         <option value="IN_PROGRESS">In Progress</option>
@@ -175,7 +217,7 @@ export default function CrmPage() {
                         value={editNotes} 
                         onChange={(e) => setEditNotes(e.target.value)}
                         placeholder="Add notes..."
-                        style={{ width: "100%", padding: "5px", borderRadius: "5px", border: "1px solid var(--border-color)", background: "var(--card-bg)", color: "var(--text-main)", minHeight: "60px", resize: "vertical" }}
+                        style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--border-color)", background: "var(--input-bg)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "var(--text-main)", minHeight: "65px", resize: "vertical", outline: "none", fontSize: "0.9rem" }}
                       />
                     ) : (
                       <div style={{ fontSize: "0.9rem", whiteSpace: "pre-wrap" }}>
@@ -185,14 +227,34 @@ export default function CrmPage() {
                   </td>
                   <td>
                     {editingId === lead.id ? (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                        <button className="btn btn-sm" onClick={() => handleSave(lead.id)}>Save</button>
-                        <button className="btn btn-outline btn-sm" onClick={() => setEditingId(null)}>Cancel</button>
+                      <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                        <button className="btn btn-sm" onClick={() => handleSave(lead.id)} title="Save Changes">
+                          <i className="fa-solid fa-check"></i> Save
+                        </button>
+                        <button className="btn btn-outline btn-sm" onClick={() => setEditingId(null)} title="Cancel">
+                          Cancel
+                        </button>
                       </div>
                     ) : (
-                      <button className="btn btn-outline btn-sm" onClick={() => startEditing(lead)}>
-                        <i className="fa-solid fa-pen"></i> Edit
-                      </button>
+                      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <button className="btn btn-outline btn-sm" onClick={() => startEditing(lead)} title="Edit Status & Notes">
+                          <i className="fa-solid fa-pen"></i> Edit
+                        </button>
+                        <button
+                          className="btn btn-outline btn-sm"
+                          onClick={() => handleDelete(lead.id, lead.fullName)}
+                          disabled={deletingId === lead.id}
+                          style={{
+                            color: "#f87171",
+                            borderColor: "rgba(239, 68, 68, 0.35)",
+                            background: "rgba(239, 68, 68, 0.08)",
+                          }}
+                          title="Delete Lead"
+                        >
+                          <i className={`fa-solid ${deletingId === lead.id ? "fa-circle-notch fa-spin" : "fa-trash"}`}></i>
+                          {deletingId === lead.id ? " Deleting..." : " Delete"}
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>

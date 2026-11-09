@@ -130,7 +130,7 @@ export default function ApplicationsPage() {
                         type="email" 
                         value={editEmail} 
                         onChange={(e) => setEditEmail(e.target.value)} 
-                        style={{ padding: "5px", borderRadius: "5px", border: "1px solid var(--border-color)", background: "transparent", color: "var(--text-main)" }}
+                        style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--border-color)", background: "var(--input-bg)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "var(--text-main)", outline: "none", fontSize: "0.9rem" }}
                       />
                     ) : (
                       app.toEmail || "-"

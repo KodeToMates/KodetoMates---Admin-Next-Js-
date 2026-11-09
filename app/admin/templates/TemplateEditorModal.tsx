@@ -148,38 +148,44 @@ export default function TemplateEditorModal({
           <div className="editorPanel" style={{ flex: 0.4, display: "flex", flexDirection: "column" }}>
             {isCreating && (
               <>
-                <label style={{ color: "var(--text-muted)", marginBottom: "5px" }}>Template Code</label>
+                <label style={{ color: "var(--text-muted)", marginBottom: "6px", fontSize: "0.86rem", fontWeight: 500 }}>Template Code</label>
                 <input
                   type="text"
                   value={editTemplateCode}
                   onChange={(e) => setEditTemplateCode(e.target.value)}
                   placeholder="WELCOME_EMAIL"
                   style={{
-                    padding: "10px",
-                    borderRadius: "8px",
+                    padding: "11px 14px",
+                    borderRadius: "10px",
                     border: "1px solid var(--border-color)",
-                    background: "var(--bg-color)",
+                    background: "var(--input-bg)",
+                    backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
                     color: "var(--text-main)",
-                    marginBottom: "15px",
+                    marginBottom: "16px",
                     width: "100%",
+                    outline: "none",
                   }}
                 />
               </>
             )}
-            <label style={{ color: "var(--text-muted)", marginBottom: "5px" }}>Subject Line</label>
+            <label style={{ color: "var(--text-muted)", marginBottom: "6px", fontSize: "0.86rem", fontWeight: 500 }}>Subject Line</label>
             <input
               type="text"
               value={editSubject}
               onChange={(e) => setEditSubject(e.target.value)}
               placeholder="Subject"
               style={{
-                padding: "10px",
-                borderRadius: "8px",
+                padding: "11px 14px",
+                borderRadius: "10px",
                 border: "1px solid var(--border-color)",
-                background: "var(--bg-color)",
+                background: "var(--input-bg)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
                 color: "var(--text-main)",
-                marginBottom: "15px",
+                marginBottom: "16px",
                 width: "100%",
+                outline: "none",
               }}
             />
 

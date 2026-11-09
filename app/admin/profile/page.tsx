@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "@/lib/apiConfig";
 import { apiClient } from "@/lib/apiClient";
+import { useConfirm } from "@/components/ConfirmModal";
 import styles from "./profile.module.css";
 
 interface UserProfile {
@@ -14,12 +15,17 @@ interface UserProfile {
   accessProfiles: string[];
   isMfaEnabled?: boolean;
   lastLoginAt?: string;
+  profileImageUrl?: string | null;
 }
 
 export default function ProfilePage() {
+  const { alert: showAlert } = useConfirm();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState("");
@@ -65,26 +71,122 @@ export default function ProfilePage() {
         setProfile(data);
         setFirstName(data.firstName || "");
         setLastName(data.lastName || "");
+        if (data.profileImageUrl) {
+          setProfileImageUrl(data.profileImageUrl);
+          localStorage.setItem("profileImageUrl", data.profileImageUrl);
+        } else {
+          const cachedImg = localStorage.getItem("profileImageUrl");
+          if (cachedImg) setProfileImageUrl(cachedImg);
+        }
       } else {
         // Fallback to localStorage data if endpoint fails
         const localEmail = localStorage.getItem("email") || "admin@example.com";
         const localFirst = localStorage.getItem("firstName") || "Admin";
         const localLast = localStorage.getItem("lastName") || "User";
         const localRole = localStorage.getItem("userRole") || "Super Admin";
+        const localImage = localStorage.getItem("profileImageUrl");
         setProfile({
           email: localEmail,
           firstName: localFirst,
           lastName: localLast,
           status: "ACTIVE",
           accessProfiles: [localRole],
+          profileImageUrl: localImage,
         });
         setFirstName(localFirst);
         setLastName(localLast);
+        if (localImage) setProfileImageUrl(localImage);
       }
     } catch (err: any) {
       setProfileError("Could not load profile details: " + err.message);
     } finally {
       setIsProfileLoading(false);
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      const typeError = "Please select a valid image file (PNG, JPG, WEBP, GIF).";
+      setProfileError(typeError);
+      await showAlert({
+        title: "Invalid File Type",
+        message: typeError,
+        variant: "warning",
+      });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    const MAX_FILE_SIZE = 150 * 1024; // 150 KB limit
+    if (file.size > MAX_FILE_SIZE) {
+      const currentSizeKb = (file.size / 1024).toFixed(1);
+      const sizeWarning = `The selected photo is ${currentSizeKb} KB. Maximum allowed size is 150 KB. Please compress or choose a smaller image.`;
+      setProfileError(sizeWarning);
+      await showAlert({
+        title: "Photo Size Limit Exceeded",
+        message: sizeWarning,
+        variant: "warning",
+      });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    setProfileMessage("");
+    setProfileError("");
+
+    try {
+      // 1. Request presigned upload URL from Spring Boot
+      const presignRes = await apiClient.post(API_ENDPOINTS.auth.avatarPresignedUrl, {
+        fileName: file.name,
+        contentType: file.type,
+        fileSize: String(file.size),
+      });
+
+      if (!presignRes.ok) {
+        const errData = await presignRes.json().catch(() => null);
+        throw new Error(errData?.error || "Failed to get presigned upload URL from backend");
+      }
+
+      const { uploadUrl, publicUrl } = await presignRes.json();
+
+      // 2. Upload file directly to Cloudflare R2 via presigned PUT URL
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error(`Direct upload to Cloudflare R2 failed (${uploadRes.status}: ${uploadRes.statusText})`);
+      }
+
+      // 3. Update user's profile with the permanent public CDN URL
+      const updateRes = await apiClient.put(API_ENDPOINTS.auth.me, {
+        profileImageUrl: publicUrl,
+      });
+
+      if (updateRes.ok) {
+        setProfileImageUrl(publicUrl);
+        localStorage.setItem("profileImageUrl", publicUrl);
+        window.dispatchEvent(new Event("storage"));
+        setProfileMessage("Profile photo uploaded and saved successfully!");
+      } else {
+        throw new Error("Uploaded photo to R2, but failed to save URL to database profile.");
+      }
+    } catch (err: any) {
+      console.error("Failed to upload avatar:", err);
+      setProfileError(err.message || "An unexpected error occurred during photo upload.");
+    } finally {
+      setIsUploadingAvatar(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -334,7 +436,45 @@ export default function ProfilePage() {
           ) : (
             <>
               <div className={styles.profileSummary}>
-                <div className={styles.largeAvatar}>{userInitial}</div>
+                <div className={styles.largeAvatarWrap}>
+                  <div 
+                    className={styles.largeAvatar}
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Click to change profile photo"
+                  >
+                    {profileImageUrl ? (
+                      <img
+                        src={profileImageUrl}
+                        alt={firstName}
+                        className={styles.largeAvatarImg}
+                        onError={() => setProfileImageUrl(null)}
+                      />
+                    ) : (
+                      <span>{userInitial}</span>
+                    )}
+
+                    <div className={`${styles.avatarOverlay} ${isUploadingAvatar ? styles.avatarOverlayActive : ""}`}>
+                      <i className={`fa-solid ${isUploadingAvatar ? "fa-circle-notch fa-spin" : "fa-camera"}`}></i>
+                      <span>{isUploadingAvatar ? "Uploading" : "Change"}</span>
+                    </div>
+                  </div>
+
+                  <div 
+                    className={styles.avatarBadge}
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Upload photo"
+                  >
+                    <i className="fa-solid fa-camera"></i>
+                  </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    style={{ display: "none" }}
+                    onChange={handleAvatarUpload}
+                  />
+                </div>
                 <div className={styles.profileMeta}>
                   <div className={styles.profileName}>{firstName} {lastName}</div>
                   <div className={styles.profileEmail}>{profile?.email}</div>
@@ -348,6 +488,9 @@ export default function ProfilePage() {
                         <i className="fa-solid fa-lock" style={{ marginRight: "4px" }}></i> 2FA Active
                       </span>
                     )}
+                    <span className={styles.avatarSizeBadge}>
+                      <i className="fa-solid fa-cloud-arrow-up" style={{ marginRight: "4px" }}></i> Max 150 KB
+                    </span>
                   </div>
                 </div>
               </div>

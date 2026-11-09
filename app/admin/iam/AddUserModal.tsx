@@ -75,17 +75,24 @@ export default function AddUserModal({
         if (e.target === e.currentTarget) handleClose();
       }}
     >
-      <div className="modalContent" style={{ width: "400px", height: "auto" }}>
+      <div className="modalContent" style={{ width: "420px", height: "auto", borderRadius: "22px" }}>
         <div className="modalHeader">
-          <h3 style={{ margin: 0, color: "var(--text-main)" }}>Add New User</h3>
+          <h3 style={{ margin: 0, color: "var(--text-main)", fontSize: "1.2rem", fontWeight: 600 }}>Add New User</h3>
           <button
             onClick={handleClose}
             style={{
-              background: "none",
-              border: "none",
+              background: "rgba(255, 255, 255, 0.05)",
+              border: "1px solid var(--border-color)",
               color: "var(--text-muted)",
               cursor: "pointer",
-              fontSize: "1.2rem",
+              fontSize: "1rem",
+              width: "32px",
+              height: "32px",
+              borderRadius: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.2s",
             }}
             aria-label="Close modal"
           >
@@ -97,12 +104,12 @@ export default function AddUserModal({
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "15px",
-            padding: "20px",
+            gap: "16px",
+            padding: "24px",
           }}
         >
           <div>
-            <label style={{ display: "block", marginBottom: "5px", color: "var(--text-muted)" }}>
+            <label style={{ display: "block", marginBottom: "6px", color: "var(--text-muted)", fontSize: "0.86rem", fontWeight: 500 }}>
               Email
             </label>
             <input
@@ -112,16 +119,20 @@ export default function AddUserModal({
               placeholder="user@example.com"
               style={{
                 width: "100%",
-                padding: "8px",
-                borderRadius: "5px",
+                padding: "11px 14px",
+                borderRadius: "10px",
                 border: "1px solid var(--border-color)",
-                background: "var(--bg-color)",
+                background: "var(--input-bg)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
                 color: "var(--text-main)",
+                fontSize: "0.95rem",
+                outline: "none",
               }}
             />
           </div>
           <div>
-            <label style={{ display: "block", marginBottom: "5px", color: "var(--text-muted)" }}>
+            <label style={{ display: "block", marginBottom: "6px", color: "var(--text-muted)", fontSize: "0.86rem", fontWeight: 500 }}>
               Password
             </label>
             <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
@@ -132,12 +143,16 @@ export default function AddUserModal({
                 placeholder="••••••••"
                 style={{
                   width: "100%",
-                  padding: "8px",
-                  paddingRight: "40px",
-                  borderRadius: "5px",
+                  padding: "11px 14px",
+                  paddingRight: "44px",
+                  borderRadius: "10px",
                   border: "1px solid var(--border-color)",
-                  background: "var(--bg-color)",
+                  background: "var(--input-bg)",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
                   color: "var(--text-main)",
+                  fontSize: "0.95rem",
+                  outline: "none",
                 }}
               />
               <button
@@ -180,7 +195,7 @@ export default function AddUserModal({
             </div>
           </div>
           <div>
-            <label style={{ display: "block", marginBottom: "5px", color: "var(--text-muted)" }}>
+            <label style={{ display: "block", marginBottom: "6px", color: "var(--text-muted)", fontSize: "0.86rem", fontWeight: 500 }}>
               First Name
             </label>
             <input
@@ -190,16 +205,20 @@ export default function AddUserModal({
               placeholder="First Name"
               style={{
                 width: "100%",
-                padding: "8px",
-                borderRadius: "5px",
+                padding: "11px 14px",
+                borderRadius: "10px",
                 border: "1px solid var(--border-color)",
-                background: "var(--bg-color)",
+                background: "var(--input-bg)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
                 color: "var(--text-main)",
+                fontSize: "0.95rem",
+                outline: "none",
               }}
             />
           </div>
           <div>
-            <label style={{ display: "block", marginBottom: "5px", color: "var(--text-muted)" }}>
+            <label style={{ display: "block", marginBottom: "6px", color: "var(--text-muted)", fontSize: "0.86rem", fontWeight: 500 }}>
               Last Name
             </label>
             <input
@@ -209,16 +228,20 @@ export default function AddUserModal({
               placeholder="Last Name"
               style={{
                 width: "100%",
-                padding: "8px",
-                borderRadius: "5px",
+                padding: "11px 14px",
+                borderRadius: "10px",
                 border: "1px solid var(--border-color)",
-                background: "var(--bg-color)",
+                background: "var(--input-bg)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
                 color: "var(--text-main)",
+                fontSize: "0.95rem",
+                outline: "none",
               }}
             />
           </div>
           <div>
-            <label style={{ display: "block", marginBottom: "5px", color: "var(--text-muted)" }}>
+            <label style={{ display: "block", marginBottom: "6px", color: "var(--text-muted)", fontSize: "0.86rem", fontWeight: 500 }}>
               Role
             </label>
             <select
@@ -226,11 +249,15 @@ export default function AddUserModal({
               onChange={(e) => setNewAccessProfile(e.target.value)}
               style={{
                 width: "100%",
-                padding: "8px",
-                borderRadius: "5px",
+                padding: "11px 14px",
+                borderRadius: "10px",
                 border: "1px solid var(--border-color)",
-                background: "var(--bg-color)",
+                background: "var(--input-bg)",
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
                 color: "var(--text-main)",
+                fontSize: "0.95rem",
+                outline: "none",
               }}
             >
               <option value="">-- None --</option>

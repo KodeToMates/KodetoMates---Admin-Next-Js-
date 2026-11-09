@@ -2,7 +2,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 36px;
+  position: relative;
+  z-index: 10;
 }
 
 .titleWrap {
@@ -12,29 +14,38 @@
 }
 
 .menuToggleBtn {
-  background: rgba(90, 90, 90, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--border-color);
   color: var(--text-main);
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 1.05rem;
+  box-shadow: var(--glass-shine);
 }
 
 .menuToggleBtn:hover {
-  background: rgba(211, 90, 42, 0.2);
+  background: rgba(228, 82, 27, 0.18);
   color: var(--primary);
-  border-color: var(--primary);
-  transform: translateY(-1px);
+  border-color: rgba(228, 82, 27, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px rgba(228, 82, 27, 0.35);
 }
 
 .title {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.9rem;
   font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-main);
+  background: linear-gradient(135deg, var(--text-main) 70%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

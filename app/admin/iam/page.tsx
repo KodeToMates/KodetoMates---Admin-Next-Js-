@@ -181,7 +181,7 @@ export default function IamPage() {
                       <select 
                         value={editStatus}
                         onChange={(e) => setEditStatus(e.target.value)}
-                        style={{ padding: "5px", borderRadius: "5px", border: "1px solid var(--border-color)", background: "var(--card-bg)", color: "var(--text-main)" }}
+                        style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid var(--border-color)", background: "var(--input-bg)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "var(--text-main)", outline: "none" }}
                       >
                         <option value="ACTIVE">ACTIVE</option>
                         <option value="INACTIVE">INACTIVE</option>

@@ -15,7 +15,6 @@ const NAV_ITEMS = [
   { id: "crm", label: "Tenant Leads", icon: "fa-users", path: "/admin/crm" },
   { id: "templates", label: "Email Templates", icon: "fa-envelope-open-text", path: "/admin/templates" },
   { id: "iam", label: "Users", icon: "fa-shield-halved", path: "/admin/iam" },
-  { id: "profile", label: "User Settings", icon: "fa-user-gear", path: "/admin/profile" },
 ];
 
 export default function Sidebar() {
@@ -24,6 +23,8 @@ export default function Sidebar() {
   const { theme, toggleTheme } = useTheme();
 
   const [userName, setUserName] = useState("Admin User");
+  const [userEmail, setUserEmail] = useState("");
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [userRole, setUserRole] = useState("");
   const [avatarChar, setAvatarChar] = useState("A");
 
@@ -37,6 +38,7 @@ export default function Sidebar() {
       const storedName = localStorage.getItem("userName");
       const storedRole = localStorage.getItem("userRole");
       const storedEmail = localStorage.getItem("email");
+      const storedImg = localStorage.getItem("profileImageUrl");
 
       if (storedName) {
         setUserName(storedName);
@@ -47,8 +49,16 @@ export default function Sidebar() {
         setAvatarChar(emailName.charAt(0).toUpperCase());
       }
 
+      if (storedEmail) {
+        setUserEmail(storedEmail);
+      }
+
       if (storedRole) {
         setUserRole(storedRole);
+      }
+
+      if (storedImg) {
+        setProfileImageUrl(storedImg);
       }
     };
 
@@ -64,16 +74,24 @@ export default function Sidebar() {
             const data = await res.json();
             const fullName = ((data.firstName || "") + (data.lastName ? " " + data.lastName : "")).trim();
             const nameToUse = fullName || data.email || "Admin User";
+            const emailToUse = data.email || localStorage.getItem("email") || "";
             const rawRole = (data.accessProfiles && data.accessProfiles.length > 0)
               ? data.accessProfiles[0]
               : "SUPERADMIN";
             const roleToUse = rawRole === "SUPERADMIN" ? "Super Admin" : rawRole;
 
             setUserName(nameToUse);
+            setUserEmail(emailToUse);
             setUserRole(roleToUse);
             setAvatarChar(nameToUse.charAt(0).toUpperCase());
 
+            if (data.profileImageUrl) {
+              setProfileImageUrl(data.profileImageUrl);
+              localStorage.setItem("profileImageUrl", data.profileImageUrl);
+            }
+
             localStorage.setItem("userName", nameToUse);
+            if (emailToUse) localStorage.setItem("email", emailToUse);
             localStorage.setItem("userRole", roleToUse);
           }
         })
@@ -158,17 +176,28 @@ export default function Sidebar() {
           )}
         </button>
 
-        {/* User Profile Card - positioned top of the logout button */}
+        {/* User Profile Card (Shadcn style) - opens /admin/profile */}
         <Link
           href="/admin/profile"
           className={`${styles.userProfile} ${pathname.startsWith("/admin/profile") ? styles.userProfileActive : ""}`}
-          title={isCollapsed ? `${userName} (${userRole})` : "View User Settings & Profile"}
+          title={isCollapsed ? `${userName} (${userEmail || userRole})` : "View User Settings & Profile"}
         >
-          <div className={styles.avatar}>{avatarChar}</div>
+          <div className={styles.avatar}>
+            {profileImageUrl ? (
+              <img
+                src={profileImageUrl}
+                alt={userName}
+                className={styles.avatarImg}
+                onError={() => setProfileImageUrl(null)}
+              />
+            ) : (
+              <span>{avatarChar}</span>
+            )}
+          </div>
           {!isCollapsed && (
             <div className={styles.userInfo}>
               <div className={styles.userName}>{userName}</div>
-              <div className={styles.userRole}>{userRole}</div>
+              <div className={styles.userEmail}>{userEmail || userRole || "admin@kodetomates.in"}</div>
             </div>
           )}
         </Link>

@@ -63,9 +63,70 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw" }}>
-      <div className="loginScreen">
-      <div className="logoContainer">
+    <div
+      suppressHydrationWarning
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        width: "100vw",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Ambient Glassmorphic Background Orbs */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          overflow: "hidden",
+          zIndex: 0,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "12%",
+            left: "22%",
+            width: "500px",
+            height: "500px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(228, 82, 27, 0.24) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "12%",
+            right: "20%",
+            width: "600px",
+            height: "600px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%)",
+            filter: "blur(90px)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "400px",
+            height: "400px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(255, 145, 77, 0.12) 0%, transparent 70%)",
+            filter: "blur(70px)",
+          }}
+        />
+      </div>
+
+      <div className="loginScreen" suppressHydrationWarning>
+      <div className="logoContainer" suppressHydrationWarning>
         <Image 
           src="/Image_v1/Primary-Logo.png" 
           alt="KodeToMates Logo" 
@@ -90,7 +151,7 @@ export default function LoginPage() {
 
         {!showMfa ? (
           <>
-            <div className="formGroup">
+            <div className="formGroup" suppressHydrationWarning>
               <label>Email Address</label>
               <input 
                 type="email" 
@@ -103,9 +164,12 @@ export default function LoginPage() {
                 required 
               />
             </div>
-            <div className="formGroup">
+            <div className="formGroup" suppressHydrationWarning>
               <label>Password</label>
-              <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <div
+                suppressHydrationWarning
+                style={{ position: "relative", display: "flex", alignItems: "center" }}
+              >
                 <input 
                   type={showPassword ? "text" : "password"} 
                   name="password"

@@ -1,9 +1,11 @@
 // Automatically use the live backend in production, and localhost in development.
-// You can still override this using the NEXT_PUBLIC_API_BASE_URL environment variable on Vercel.
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 
-  (process.env.NODE_ENV === 'production' 
-    ? "https://kodetomates-backend.onrender.com/api/v1" 
+// You can still override this using the NEXT_PUBLIC_API_BASE_URL environment variable on Vercel or locally.
+const rawApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ||
+  (process.env.NODE_ENV === 'production'
+    ? "https://api.kodetomates.in/api/v1"
     : "http://localhost:8081/api/v1");
+
+export const API_BASE_URL = rawApiBaseUrl.replace(/\/+$/, "");
 
 export const API_ENDPOINTS = {
   auth: {
@@ -14,6 +16,7 @@ export const API_ENDPOINTS = {
     forgotPasswordReset: `${API_BASE_URL}/auth/forgot-password/reset`,
     mfaSetup: `${API_BASE_URL}/auth/mfa/setup`,
     mfaVerify: `${API_BASE_URL}/auth/mfa/verify`,
+    avatarPresignedUrl: `${API_BASE_URL}/auth/me/avatar/presigned-url`,
   },
   template: {
     base: `${API_BASE_URL}/template`,
