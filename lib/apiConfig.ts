@@ -35,4 +35,9 @@ export const API_ENDPOINTS = {
     base: `${API_BASE_URL}/application`,
     byId: (id: string | number) => `${API_BASE_URL}/application/${id}`,
   },
+  blogs: {
+    base: `${API_BASE_URL}/admin/blogs`,
+    byId: (id: string | number) => `${API_BASE_URL}/admin/blogs/${id}`,
+    presignThumbnail: `${API_BASE_URL}/admin/blogs/presign-thumbnail`,
+  },
 };

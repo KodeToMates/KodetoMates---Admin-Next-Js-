@@ -13,6 +13,7 @@ import { apiClient } from "@/lib/apiClient";
 const NAV_ITEMS = [
   { id: "applications", label: "Core Tenants", icon: "fa-cubes", path: "/admin/applications" },
   { id: "crm", label: "Tenant Leads", icon: "fa-users", path: "/admin/crm" },
+  { id: "blogs", label: "Blog Studio", icon: "fa-newspaper", path: "/admin/blogs" },
   { id: "templates", label: "Email Templates", icon: "fa-envelope-open-text", path: "/admin/templates" },
   { id: "iam", label: "Users", icon: "fa-shield-halved", path: "/admin/iam" },
 ];
