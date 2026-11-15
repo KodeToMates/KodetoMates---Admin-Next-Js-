@@ -40,4 +40,8 @@ export const API_ENDPOINTS = {
     byId: (id: string | number) => `${API_BASE_URL}/admin/blogs/${id}`,
     presignThumbnail: `${API_BASE_URL}/admin/blogs/presign-thumbnail`,
   },
+  seoAudit: {
+    base: `${API_BASE_URL}/seo-audit`,
+    byId: (id: string | number) => `${API_BASE_URL}/seo-audit/${id}`,
+  },
 };

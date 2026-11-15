@@ -1,0 +1,209 @@
+.container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+  max-width: 100%;
+}
+
+.toast {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px 16px;
+  border-radius: 14px;
+  background: var(--modal-bg, rgba(18, 20, 26, 0.92));
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 rgba(255, 255, 255, 0.14);
+  min-width: 320px;
+  max-width: 420px;
+  overflow: hidden;
+  animation: slideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s ease;
+}
+
+.toast.hiding {
+  animation: slideOut 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  font-size: 0.95rem;
+  margin-top: 1px;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main, #ffffff);
+  line-height: 1.3;
+}
+
+.message {
+  font-size: 0.8rem;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.closeBtn:hover {
+  color: var(--text-main, #ffffff);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Success Variant */
+.success {
+  border-left: 4px solid #10b981;
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), 0 0 25px -8px rgba(16, 185, 129, 0.3);
+}
+
+.success .iconWrapper {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Error Variant */
+.error {
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), 0 0 25px -8px rgba(239, 68, 68, 0.3);
+}
+
+.error .iconWrapper {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Warning Variant */
+.warning {
+  border-left: 4px solid #f59e0b;
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), 0 0 25px -8px rgba(245, 158, 11, 0.3);
+}
+
+.warning .iconWrapper {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Info Variant */
+.info {
+  border-left: 4px solid #e4521b;
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55), 0 0 25px -8px rgba(228, 82, 27, 0.3);
+}
+
+.info .iconWrapper {
+  background: rgba(228, 82, 27, 0.15);
+  color: #ff7a30;
+  border: 1px solid rgba(228, 82, 27, 0.3);
+}
+
+/* Auto-dismiss progress bar */
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transform-origin: left;
+  animation: shrink linear forwards;
+}
+
+.success .progressBar {
+  background: #10b981;
+}
+
+.error .progressBar {
+  background: #ef4444;
+}
+
+.warning .progressBar {
+  background: #f59e0b;
+}
+
+.info .progressBar {
+  background: #e4521b;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(40px) scale(0.96);
+  }
+}
+
+@keyframes shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+  }
+  .toast {
+    min-width: 0;
+    max-width: 100%;
+  }
+}

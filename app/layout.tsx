@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/Theme/ThemeContext";
 import { ConfirmProvider } from "@/components/ConfirmModal";
+import { ToastProvider } from "@/components/Toast";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -55,6 +56,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/Image_v1/favicon_io/apple-touch-icon.png?v=2" />
         <link rel="manifest" href="/Image_v1/favicon_io/site.webmanifest" />
         <script
+          id="theme-initializer"
+          suppressHydrationWarning={true}
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -81,7 +84,9 @@ export default function RootLayout({
       <body className={`${poppins.className} ${poppins.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
         <ThemeProvider>
           <ConfirmProvider>
-            {children}
+            <ToastProvider>
+              {children}
+            </ToastProvider>
           </ConfirmProvider>
         </ThemeProvider>
       </body>
